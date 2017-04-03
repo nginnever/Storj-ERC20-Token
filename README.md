@@ -1,5 +1,7 @@
-# storjcoin-erc20-token
-An ethereum standard token for Storjcoin
+# storj-erc20-token
+An ethereum standard token for Storj
+
+(test name Voxelots)
 
 ## Table of Contents
 
@@ -11,56 +13,75 @@ An ethereum standard token for Storjcoin
 
 ### Token Contract Information
 
-- Symbol: `SRJ` // To be determined
-- Name: Storjcoin
-- Address: Coming Soon
+- Symbol: `VOX` // To be determined
+- Name: Voxelots
+- Address: `0x3dc796ae45d60410a3a2012cbafe591c11210c7b`
 - Decimal places: 8 // Aligns with bitcoin not the 18 in ethereum
 - Total supply: 500,000,000
 
 ### The Token Contract Source Code
 
 ```javascript
-pragma solidity ^0.4.2;
+/*
+This Token Contract implements the standard token functionality (https://github.com/ethereum/EIPs/issues/20) as well as the following OPTIONAL extras intended for use by humans.
 
-// ERC Token Standard #20
-// https://github.com/ethereum/EIPs/issues/20
+In other words. This is intended for deployment in something like a Token Factory or Mist wallet, and then used by humans.
+Imagine coins, currencies, shares, voting weight, etc.
+Machine-based, rapid creation of many tokens would not necessarily need these extra features or will be minted in other manners.
 
-contract ERC20Interface {
+1) Initial Finite Supply (upon creation one specifies how much is minted).
+2) In the absence of a token registry: Optional Decimal, Symbol & Name.
+3) Optional approveAndCall() functionality to notify a contract if an approval() has occurred.
 
-    // Get the total token supply
-    // Signature 18160ddd totalSupply()
-    function totalSupply() constant returns (uint256 totalSupply);
-    
-    // Get the account balance of another account with address _owner
-    // Signature 70a08231 balanceOf(address)
-    function balanceOf(address _owner) constant returns (uint256 balance);
-    
-    // Send _value amount of tokens to address _to
-    // Signature a9059cbb transfer(address,uint256)
-    function transfer(address _to, uint256 _value) returns (bool success);
-    
-    // Send _value amount of tokens from address _from to address _to
-    // The transferFrom method is used for a withdraw workflow, allowing contracts to send 
-    // tokens on your behalf, for example to "deposit" to a contract address and/or to charge 
-    // fees in sub-currencies; the command should fail unless the _from account has 
-    // deliberately authorized the sender of the message via some mechanism; we propose 
-    // these standardized APIs for approval:
-    // Signature 23b872dd transferFrom(address,address,uint256)
-    function transferFrom(address _from, address _to, uint256 _value) returns (bool success);
-    
-    // Allow _spender to withdraw from your account, multiple times, up to the _value amount. 
-    // If this function is called again it overwrites the current allowance with _value.
-    // Signature 095ea7b3 approve(address,uint256)
-    function approve(address _spender, uint256 _value) returns (bool success);
-    
-    // Returns the amount which _spender is still allowed to withdraw from _owner
-    // Signature dd62ed3e allowance(address,address)
-    function allowance(address _owner, address _spender) constant returns (uint256 remaining);
-    
-    // Triggered when tokens are transferred.
-    event Transfer(address indexed _from, address indexed _to, uint256 _value);
-    
-    // Triggered whenever approve(address _spender, uint256 _value) is called.
-    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+.*/
+
+import "./StandardToken.sol";
+
+pragma solidity ^0.4.8;
+
+contract Voxelots is StandardToken {
+
+    function () {
+        //if ether is sent to this address, send it back.
+        throw;
+    }
+
+    /* Public variables of the token */
+
+    /*
+    NOTE:
+    The following variables are OPTIONAL vanities. One does not have to include them.
+    They allow one to customise the token contract & in no way influences the core functionality.
+    Some wallets/interfaces might not even bother to look at this information.
+    */
+    string public name;                   //fancy name: eg Simon Bucks
+    uint8 public decimals;                //How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
+    string public symbol;                 //An identifier: eg SBX
+    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
+
+    function Voxelots(
+        uint256 _initialAmount,
+        string _tokenName,
+        uint8 _decimalUnits,
+        string _tokenSymbol
+        ) {
+        balances[msg.sender] = _initialAmount;               // Give the creator all initial tokens
+        totalSupply = _initialAmount;                        // Update total supply
+        name = _tokenName;                                   // Set the name for display purposes
+        decimals = _decimalUnits;                            // Amount of decimals for display purposes
+        symbol = _tokenSymbol;                               // Set the symbol for display purposes
+    }
+
+    /* Approves and then calls the receiving contract */
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
+        allowed[msg.sender][_spender] = _value;
+        Approval(msg.sender, _spender, _value);
+
+        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
+        //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
+        //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
+        return true;
+    }
 }
 ```
