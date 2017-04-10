@@ -5,11 +5,29 @@ An ethereum standard token for Storj
 
 ## Table of Contents
 
+- [SJCX Conversion](#sjcx-conversion)
 - [Token Contract Information](#token-contract-information)
 - [How To Watch The Token Contract In Ethereum Wallet / Mist](#how-it-works)
 - [How To Watch The Token In Ethereum Wallet / Mist](#)
 - [The Token Contract Source Code](#)
 
+### SJCX-To-Token-Converter
+
+#### notes
+
+The idea is that we take a snapshot of the SJCX ledger on Counterparty and get a list of all addresses and their balances at a certain time.
+  
+Then load that into a new ERC20 contract with a special kind of "send" that verifies signatures against the pubkey hashes.
+so that people could port over their counterparty private keys using some sort of easy tool "paste your private key here, and your ethereum address there." all client-side.
+
+```
+user inputs private key
+client derives public key
+client does account setup
+client submits transaction signed by private key
+contract verifies that signature matches pubkey, and pubkeyhash has a balance. 
+contract moves balance from pubkeyhash to account
+```
 
 ### Token Contract Information
 
