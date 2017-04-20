@@ -3,8 +3,27 @@ pragma solidity ^0.4.8;
 import "./ERC20.sol";
 
 contract StandardToken is ERC20 {
+    // vault addresses
+    address public hotwallet;
+    address public vaultkey;
+    address public recoverykey;
+    // vault definitions
+    uint public unvaultedAmount;
+    uint public redeemblock;
+    bool public destroyed;
+
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
+
+    /*
+    * Fix for the ERC20 short address attack  
+    */
+    modifier onlyPayloadSize(uint size) {
+     if(msg.data.length < size + 4) {
+       throw;
+     }
+     _;
+    }
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         //Default assumes totalSupply can't be over max (2^256 - 1).
