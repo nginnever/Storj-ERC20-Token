@@ -4,7 +4,7 @@ import "./ERC20.sol";
 
 contract StandardToken is ERC20 {
     // vault addresses
-    address public hotwallet;
+    address public clientpool;
     address public vaultkey;
     address public recoverykey;
     // vault definitions
@@ -25,7 +25,21 @@ contract StandardToken is ERC20 {
      _;
     }
 
-    function transfer(address _to, uint256 _value) returns (bool success) {
+    /* 
+    * Vault control modifiers
+    */
+
+    modifier only_vaultkey() { 
+        if (msg.sender != vaultkey) throw;
+        _
+    }
+
+    modifier only_recoverykey() { 
+        if (msg.sender != recoverykey) throw;
+        _
+    }
+
+    function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
         //Default assumes totalSupply can't be over max (2^256 - 1).
         //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
         //Replace the if with this one instead.
