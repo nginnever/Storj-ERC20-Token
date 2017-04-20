@@ -43,6 +43,6 @@ contract SJCXAllocation {
         var toTransfer = tokensCreated * allocation / totalAllocations;
 
         // Will fail if allocation (and therefore toTransfer) is 0.
-        if (!gnt.transfer(msg.sender, toTransfer)) throw;
+        if (!sjcx.transfer(msg.sender, toTransfer)) throw;
     }
 }

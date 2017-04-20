@@ -1,8 +1,10 @@
 pragma solidity ^0.4.8;
 
-import "./Token.sol";
+import "./ERC20.sol";
 
-contract StandardToken is Token {
+contract StandardToken is ERC20 {
+    mapping (address => uint256) balances;
+    mapping (address => mapping (address => uint256)) allowed;
 
     function transfer(address _to, uint256 _value) returns (bool success) {
         //Default assumes totalSupply can't be over max (2^256 - 1).
@@ -43,6 +45,11 @@ contract StandardToken is Token {
       return allowed[_owner][_spender];
     }
 
-    mapping (address => uint256) balances;
-    mapping (address => mapping (address => uint256)) allowed;
+    function migrate(address _convert, uint256 _value) returns (bool success) {
+        // we can initialize the client pool of sjcx from a snapshot
+        // the account that owns the tokens in this pool can just use
+        // the regular transfer function 
+        // that account must be secured, compromise means draining the 
+        // funds from the client pool
+    }
 }
