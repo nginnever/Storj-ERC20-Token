@@ -85,4 +85,27 @@ contract StandardToken is ERC20 {
         // that account must be secured, compromise means draining the 
         // funds from the client pool
     }
+
+    function unvault(uint amount) only_vaultkey {
+        if (amount + unvaultedAmount > this.balance) return;
+        unvaultedAmount += amount;
+        redeemblock = block.timestamp + 24 hours;
+        Unvault(amount);
+    }
+
+    function redeem() only_vaultkey {
+        if (destroyed || block.timestamp < redeemblock) return;
+        // TODO transfer tokens to correct address
+        // the recover function should invalidate this request
+        //clientpool.call.value(unvaultedAmount)();
+        unvaultedAmount = 0;
+        Redeem();
+    }
+
+    function recover(address newAccount) only_recoverykey {
+        unvaultedAmount = 0;
+        // TODO set client pool address to newAccount
+        //clientpool = newAccount;
+        Recover(newAccount);
+    }
 }
