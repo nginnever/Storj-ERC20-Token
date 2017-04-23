@@ -15,7 +15,7 @@ import "./StandardToken.sol";
 
 pragma solidity ^0.4.8;
 
-contract Voxelots is StandardToken {
+contract SJCX is StandardToken {
 
     function () {
         //if ether is sent to this address, send it back.
@@ -35,25 +35,17 @@ contract Voxelots is StandardToken {
     string public symbol;                 //An identifier: eg SBX
     string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
 
-    function Voxelots(
+    function SJCX(
         uint256 _initialAmount,
         string _tokenName,
         uint8 _decimalUnits,
         string _tokenSymbol,
-        address vault,                                       // Address to lock client supply in
-        address recovery                                     // Address of recovery account
         ) {
         balances[msg.sender] = _initialAmount;               // Give the creator all initial tokens
         totalSupply = _initialAmount;                        // Update total supply
         name = _tokenName;                                   // Set the name for display purposes
         decimals = _decimalUnits;                            // Amount of decimals for display purposes
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
-
-        // vault
-        hotwallet = msg.sender;
-        vaultkey = vault;
-        recoverykey = recovery;
-        destroyed = false;
 
         // initialize sjcx holdings
         
