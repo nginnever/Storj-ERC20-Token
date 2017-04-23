@@ -10,7 +10,7 @@ An ethereum standard token for Storj
 - [How To Watch The Token Contract In Ethereum Wallet / Mist](#how-it-works)
 - [How To Watch The Token In Ethereum Wallet / Mist](#)
 
-### SJCX-To-Token-Converter
+### Counterparty To Ethereum Token Converter
 
 A centralized approach is going to be used and information on the conversion process will be released shortly.
 
