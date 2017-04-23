@@ -3,41 +3,8 @@ pragma solidity ^0.4.8;
 import "./ERC20.sol";
 
 contract StandardToken is ERC20 {
-    // vault addresses
-    address public clientpool;
-    address public vaultkey;
-    address public recoverykey;
-    // vault definitions
-    uint public unvaultedAmount;
-    uint public redeemblock;
-    bool public destroyed;
-
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
-
-    /*
-    * Fix for the ERC20 short address attack  
-    */
-    modifier onlyPayloadSize(uint size) {
-     if(msg.data.length < size + 4) {
-       throw;
-     }
-     _;
-    }
-
-    /* 
-    * Vault control modifiers
-    */
-
-    modifier only_vaultkey() { 
-        if (msg.sender != vaultkey) throw;
-        _
-    }
-
-    modifier only_recoverykey() { 
-        if (msg.sender != recoverykey) throw;
-        _
-    }
 
     function transfer(address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {
         //Default assumes totalSupply can't be over max (2^256 - 1).
@@ -84,28 +51,5 @@ contract StandardToken is ERC20 {
         // the regular transfer function 
         // that account must be secured, compromise means draining the 
         // funds from the client pool
-    }
-
-    function unvault(uint amount) only_vaultkey {
-        if (amount + unvaultedAmount > this.balance) return;
-        unvaultedAmount += amount;
-        redeemblock = block.timestamp + 24 hours;
-        Unvault(amount);
-    }
-
-    function redeem() only_vaultkey {
-        if (destroyed || block.timestamp < redeemblock) return;
-        // TODO transfer tokens to correct address
-        // the recover function should invalidate this request
-        //clientpool.call.value(unvaultedAmount)();
-        unvaultedAmount = 0;
-        Redeem();
-    }
-
-    function recover(address newAccount) only_recoverykey {
-        unvaultedAmount = 0;
-        // TODO set client pool address to newAccount
-        //clientpool = newAccount;
-        Recover(newAccount);
     }
 }
