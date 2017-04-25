@@ -1,7 +1,7 @@
 # storj-erc20-token
 An ethereum standard token for Storj
 
-(SJCX)
+(STORJ)
 
 ## Table of Contents
 
@@ -16,8 +16,8 @@ A centralized approach is going to be used and information on the conversion pro
 
 ### Token Contract Information
 
-- Symbol: `SJCX` // To be finalized
-- Name: Storjcoin X
+- Symbol: `STORJ` // finalized
+- Name: Storj Token // to be finalized
 - Address: `0x3dc796ae45d60410a3a2012cbafe591c11210c7b`
 - Decimal places: 8 // Aligns with bitcoin not the 18 in ethereum
 - Total supply: 500,000,000
