@@ -1,60 +1,80 @@
-/*
-This Token Contract implements the standard token functionality (https://github.com/ethereum/EIPs/issues/20) as well as the following OPTIONAL extras intended for use by humans.
-
-In other words. This is intended for deployment in something like a Token Factory or Mist wallet, and then used by humans.
-Imagine coins, currencies, shares, voting weight, etc.
-Machine-based, rapid creation of many tokens would not necessarily need these extra features or will be minted in other manners.
-
-1) Initial Finite Supply (upon creation one specifies how much is minted).
-2) In the absence of a token registry: Optional Decimal, Symbol & Name.
-3) Optional approveAndCall() functionality to notify a contract if an approval() has occurred.
-
-.*/
-
-import "./StandardToken.sol";
-
 pragma solidity ^0.4.8;
 
-contract SJCX is StandardToken {
 
-    function () {
-        //if ether is sent to this address, send it back.
-        throw;
-    }
+import './ERC20.sol';
+import './SafeMath.sol';
 
-    /* Public variables of the token */
 
-    /*
-    string public constant name = "Storj Token;
-    uint8 public constant decimals = 8;            
-    string public constant symbol = "STORJ";               
-    string public version = 'H0.1';       //human 0.1 standard. Just an arbitrary versioning scheme.
+/**
+ * Standard ERC20 token
+ *
+ * https://github.com/ethereum/EIPs/issues/20
+ * Based on code by FirstBlood:
+ * https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
+ */
 
-    function SJCX(
-        uint256 _initialAmount,
-        string _tokenName,
-        uint8 _decimalUnits,
-        string _tokenSymbol,
-        ) {
-        balances[msg.sender] = _initialAmount;               // Give the creator all initial tokens
-        totalSupply = _initialAmount;                        // Update total supply
-        name = _tokenName;                                   // Set the name for display purposes
-        decimals = _decimalUnits;                            // Amount of decimals for display purposes
-        symbol = _tokenSymbol;                               // Set the symbol for display purposes
+/// @title Storj Token (STORJ) - token code for Storj Labs
 
-        // initialize sjcx holdings
-        
-    }
+contract StorjToken is ERC20, SafeMath {
 
-    /* Approves and then calls the receiving contract */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
-        allowed[msg.sender][_spender] = _value;
-        Approval(msg.sender, _spender, _value);
+  mapping(address => uint) balances;
+  mapping (address => mapping (address => uint)) allowed;
 
-        //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
-        //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
-        //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
-        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
-        return true;
-    }
+  string public name;
+  string public symbol;
+  uint public totalSupply;
+  uint8 public decimals;
+
+  function StorjToken(string _name,
+                      string _symbol,
+                      uint _totalSupply,
+                      uint8 _decimalUnits,
+                      address _migrationMaster
+    ) {
+    balances[_migrationMaster] = _totalSupply; // Allocate all tokens initially to multisig account 
+    name = _name;
+    symbol = _symbol;
+    totalSupply = _totalSupply;
+    decimals = _decimalUnits;
+  }
+
+
+  function transfer(address _to, uint _value) returns (bool success) {
+    balances[msg.sender] = safeSub(balances[msg.sender], _value);
+    balances[_to] = safeAdd(balances[_to], _value);
+    Transfer(msg.sender, _to, _value);
+    return true;
+  }
+
+  function transferFrom(address _from, address _to, uint _value) returns (bool success) {
+    var _allowance = allowed[_from][msg.sender];
+
+    // Check is not needed because safeSub(_allowance, _value) will already throw if this condition is not met
+    // if (_value > _allowance) throw;
+
+    balances[_to] = safeAdd(balances[_to], _value);
+    balances[_from] = safeSub(balances[_from], _value);
+    allowed[_from][msg.sender] = safeSub(_allowance, _value);
+    Transfer(_from, _to, _value);
+    return true;
+  }
+
+  function balanceOf(address _owner) constant returns (uint balance) {
+    return balances[_owner];
+  }
+
+  function approve(address _spender, uint _value) returns (bool success) {
+    allowed[msg.sender][_spender] = _value;
+    Approval(msg.sender, _spender, _value);
+    return true;
+  }
+
+  function allowance(address _owner, address _spender) constant returns (uint remaining) {
+    return allowed[_owner][_spender];
+  }
+
+  function burn() {
+    // TODO
+    // https://github.com/miohtama/Edgeless-Smart-Contracts/blob/master/original_contracts/original_token.sol#L102
+  }
 }
