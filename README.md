@@ -16,9 +16,9 @@ A centralized approach is going to be used and information on the conversion pro
 
 ### Token Contract Information
 
-- Symbol: `STORJ` // finalized
-- Name: Storj Token // to be finalized
-- Address: `0x3dc796ae45d60410a3a2012cbafe591c11210c7b`
+- Symbol: `STORJ`
+- Name: Storj Token
+- Address: `0x3dc796ae45d60410a3a2012cbafe591c11210c7b` (testnet)
 - Decimal places: 8 // Aligns with bitcoin not the 18 in ethereum
 - Total supply: 500,000,000
 
@@ -34,7 +34,7 @@ In Ethereum Wallet / Mist, select the CONTRACTS tab and click WATCH TOKEN to ope
 
 In Ethereum Wallet / Mist, select the CONTRACTS tab and click WATCH CONTRACT to open the Watch contract window. Then:
 
-- Under CONTRACT NAME, enter Voxelots
+- Under CONTRACT NAME, enter STORJ
 
 - Under CONTRACT ADDRESS, enter 0x3dc796ae45d60410a3a2012cbafe591c11210c7b`
 
